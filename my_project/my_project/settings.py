@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-2$u&)&odod4wy@^(fk=!36h2n=asf))+5=hvbs$=ivfp$de*ay
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [config('IP_PUBLICA_LIGHTSAIL'), 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [config('INSTANCE_IP'), 'localhost', '127.0.0.1']
 
 
 # Application definition

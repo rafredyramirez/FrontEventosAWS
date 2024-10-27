@@ -7,7 +7,7 @@ from django.http import HttpResponse
 
 
 # URL del API Gateway
-URL_API_GATEWAY = config('URL_API_GATEWAY');
+URL_API_GATEWAY = config('API_GATEWAY_BASE');
 
 # View menú opciones
 def home(request):
