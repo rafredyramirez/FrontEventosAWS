@@ -7,7 +7,7 @@ from django.http import HttpResponse
 
 
 # URL del API Gateway
-API_GATEWAY_URL = config('URL_API_GATEWAY');
+URL_API_GATEWAY = config('URL_API_GATEWAY');
 
 # View menú opciones
 def home(request):
@@ -23,7 +23,7 @@ def list_events(request, event_id=None):
     if event_id:
         try:
             # Realiza una solicitud a la API para obtener los detalles del evento
-            response = requests.get(f"{API_GATEWAY_URL}?event_id={event_id}", headers=headers)
+            response = requests.get(f"{URL_API_GATEWAY}events?event_id={event_id}", headers=headers)
             if response.status_code == 200:
                 event = response.json()  # Obtener el evento de la respuesta
                 return render(request, 'eventos/edit_event.html', {'event': event})
@@ -36,7 +36,7 @@ def list_events(request, event_id=None):
     else:
         events = []
         try:
-            response = requests.get(API_GATEWAY_URL, headers=headers)
+            response = requests.get(f"{URL_API_GATEWAY}events", headers=headers)
             if response.status_code == 200:
                 events = response.json()  # Obtener la lista de eventos
             else:
@@ -79,7 +79,7 @@ def create_event(request):
         }
 
         # Realizar la petición al API Gateway
-        response = requests.request("POST", API_GATEWAY_URL, headers=headers, data=payload)
+        response = requests.request("POST", f"{URL_API_GATEWAY}events", headers=headers, data=payload)
 
         if response.status_code == 201:
             messages.success(request, 'Evento creado con éxito.')
@@ -119,7 +119,7 @@ def edit_event(request):
             'authorizationToken': 'allow'
         }
         
-        response = requests.put(API_GATEWAY_URL, headers=headers, data=payload)        
+        response = requests.put(f"{URL_API_GATEWAY}events", headers=headers, data=payload)        
        
         if response.status_code == 200:
             messages.success(request, 'Evento editado con éxito.')
@@ -142,7 +142,7 @@ def delete_event(request, event_id):
             'authorizationToken': 'allow'
         }
         
-        response = requests.request("DELETE", API_GATEWAY_URL, headers=headers, data=payload)
+        response = requests.request("DELETE", f"{URL_API_GATEWAY}events", headers=headers, data=payload)
 
         if response.status_code == 200:
             messages.success(request, 'Evento eliminado exitosamente.')
@@ -159,7 +159,7 @@ def delete_event(request, event_id):
 def register_event(request):
      # Obtener los eventos activos desde la API o la base de datos
     try:
-        response = requests.get('URL_DE_LA_API')
+        response = requests.get('API_GATEWAY_URL')
         events = response.json()
         active_events = [event for event in events if event['status'] == 'active']
     except Exception as e:
