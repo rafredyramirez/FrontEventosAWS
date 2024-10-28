@@ -156,16 +156,51 @@ def delete_event(request, event_id):
         request.session['error_message'] = "Error al conectar con la API."
         return redirect('list_events')
     
+# def register_event(request):
+#      # Obtener los eventos activos desde la API o la base de datos
+#     try:
+#         response = requests.get('API_GATEWAY_URL')
+#         events = response.json()
+#         active_events = [event for event in events if event['status'] == 'active']
+#     except Exception as e:
+#         active_events = []
+#         print(f"Error al obtener eventos: {str(e)}")
+
+#     return render(request, 'eventos/register_event.html', {'active_events': active_events})
+#     # return render(request, 'eventos/register_event.html', {})
 def register_event(request):
-     # Obtener los eventos activos desde la API o la base de datos
-    try:
-        response = requests.get('API_GATEWAY_URL')
-        events = response.json()
-        active_events = [event for event in events if event['status'] == 'active']
-    except Exception as e:
-        active_events = []
-        print(f"Error al obtener eventos: {str(e)}")
+    if request.method == 'POST':
+        # Datos que obtienes del formulario
+        event_id = request.POST.get('event_id')
+        attendee_id = request.POST.get('attendee_id')
+        attendee_name = request.POST.get('attendee_name')
+        attendee_email = request.POST.get('attendee_email')
+        
+        # Datos a enviar al API Gateway
+        payload = json.dumps({
+            'event_id': event_id,
+            'name_event': name_event,
+            'description': description,
+            'event_date': event_date,
+            'event_time': event_time,
+            'max_capacity': max_capacity,
+            'organizer': organizer,
+            'event_status': event_status,
+            'event_location': event_location,
+        })
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'authorizationToken': 'allow'  # Si es necesario
+        }
 
-    return render(request, 'eventos/register_event.html', {'active_events': active_events})
-    # return render(request, 'eventos/register_event.html', {})
+        # Realizar la petición al API Gateway
+        response = requests.request("POST", f"{URL_API_GATEWAY}events", headers=headers, data=payload)
 
+        if response.status_code == 201:
+            messages.success(request, 'Evento creado con éxito.')
+            return redirect('list_events')
+        else:
+            messages.error(request, 'Error al crear el evento. Inténtalo nuevamente.')
+
+    return render(request, 'eventos/create_event.html')
