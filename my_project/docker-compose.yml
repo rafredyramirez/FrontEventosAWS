@@ -1,3 +1,5 @@
+version: '3.8'  # Asegúrate de usar una versión compatible
+
 services:
   django:
     build: .
