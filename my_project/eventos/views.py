@@ -179,14 +179,9 @@ def register_event(request):
         # Datos a enviar al API Gateway
         payload = json.dumps({
             'event_id': event_id,
-            'name_event': name_event,
-            'description': description,
-            'event_date': event_date,
-            'event_time': event_time,
-            'max_capacity': max_capacity,
-            'organizer': organizer,
-            'event_status': event_status,
-            'event_location': event_location,
+            'attendee_id': attendee_id,
+            'attendee_name': attendee_name,
+            'attendee_email': attendee_email,
         })
         
         headers = {
@@ -195,12 +190,12 @@ def register_event(request):
         }
 
         # Realizar la petición al API Gateway
-        response = requests.request("POST", f"{URL_API_GATEWAY}events", headers=headers, data=payload)
+        response = requests.request("POST", f"{URL_API_GATEWAY}assistens", headers=headers, data=payload)
 
         if response.status_code == 201:
-            messages.success(request, 'Evento creado con éxito.')
-            return redirect('list_events')
+            messages.success(request, 'Asistencia confirmada')
+            return redirect('home')
         else:
-            messages.error(request, 'Error al crear el evento. Inténtalo nuevamente.')
+            messages.error(request, 'Error al registrar su asistencia al evento. Inténtalo nuevamente.')
 
-    return render(request, 'eventos/create_event.html')
+    return render(request, 'eventos/register_event.html')
