@@ -4,10 +4,10 @@ FROM python:3.11-alpine
 WORKDIR /code/
 
 # Copiar archivos necesarios
-COPY ./my_project/manage.py /code/
-COPY ./my_project/requirements.txt /code/
-COPY ./my_project/.env /code/
-COPY ./my_project/my_project/ /code/my_project/
+COPY my_project/manage.py /code/
+COPY my_project/requirements.txt /code/
+COPY my_project/.env /code/
+COPY my_project/my_project/ /code/my_project/
 
 # Instalar dependencias
 RUN pip install --no-cache-dir -r requirements.txt
