@@ -156,31 +156,38 @@ def delete_event(request, event_id):
         request.session['error_message'] = "Error al conectar con la API."
         return redirect('list_events')
     
-# def register_event(request):
-#      # Obtener los eventos activos desde la API o la base de datos
-#     try:
-#         response = requests.get('API_GATEWAY_URL')
-#         events = response.json()
-#         active_events = [event for event in events if event['status'] == 'active']
-#     except Exception as e:
-#         active_events = []
-#         print(f"Error al obtener eventos: {str(e)}")
-
-#     return render(request, 'eventos/register_event.html', {'active_events': active_events})
-#     # return render(request, 'eventos/register_event.html', {})
 def register_event(request):
+    headers = {
+        'Content-Type': 'application/json',
+        'authorizationToken': 'allow'
+    }
+    
+    events = []
+    try:
+        response = requests.get(f"{URL_API_GATEWAY}events", headers=headers)
+        if response.status_code == 200:
+            events = response.json()  # Obtener la lista de eventos
+        else:
+            print(f"Error al obtener eventos: {response.status_code} - {response.content.decode()}")
+    except Exception as e:
+        print(f"Error al conectar con la API: {str(e)}")
+
+    return render(request, 'eventos/register_event.html', {'events': events})
+
+# crear evento
+def create_asistencia(request):
     if request.method == 'POST':
         # Datos que obtienes del formulario
-        event_id = request.POST.get('event_id')
-        attendee_id = request.POST.get('attendee_id')
         attendee_name = request.POST.get('attendee_name')
+        attendee_id = request.POST.get('attendee_id')
         attendee_email = request.POST.get('attendee_email')
+        event_id = request.POST.get('event_id')
         
         # Datos a enviar al API Gateway
         payload = json.dumps({
             'event_id': event_id,
-            'attendee_id': attendee_id,
             'attendee_name': attendee_name,
+            'attendee_id': attendee_id,
             'attendee_email': attendee_email,
         })
         
@@ -191,11 +198,15 @@ def register_event(request):
 
         # Realizar la petición al API Gateway
         response = requests.request("POST", f"{URL_API_GATEWAY}assistens", headers=headers, data=payload)
-
-        if response.status_code == 201:
-            messages.success(request, 'Asistencia confirmada')
-            return redirect('home')
+        # print(response.json())
+        # print(response.text)
+        if response.status_code == 200:
+            messages.success(request, "Exitoso")
+            return redirect('register_event')
+        elif response.status_code == 400:
+            messages.success(request, response.text)
+            return redirect('register_event')
         else:
-            messages.error(request, 'Error al registrar su asistencia al evento. Inténtalo nuevamente.')
+            messages.error(request, 'Error al crear el evento. Inténtalo nuevamente.')
 
     return render(request, 'eventos/register_event.html')
